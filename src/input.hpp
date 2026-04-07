@@ -5,8 +5,6 @@ class input_keyboard {
     float speed = 0.5f;
 
     GLFWwindow *window;
-    float loffset;
-    float offset;
 
 public:
 static void processInput(GLFWwindow *window, float &loffset, float &offset) {

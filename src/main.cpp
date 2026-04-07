@@ -3,17 +3,22 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <cmath>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "shader.h"
 #include "figure.hpp"
 #include "input.hpp"
 
 
 unsigned int VBO, EBO, VAO;
+
                         //added                        //added
 //TODO window resizing, block class, sphera class, input_handler class
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-//void processInput(GLFWwindow *window);
 
 const unsigned int SRC_WIDTH = 800;
 const unsigned int SRC_HEIGHT = 600;
@@ -44,9 +49,7 @@ void Figure::init() {
   glEnableVertexAttribArray(1);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-
   }
-
 
 int main() {
   glfwInit();
@@ -57,7 +60,7 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif // __APPLE
   
-  GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL); 
+  GLFWwindow* window = glfwCreateWindow(SRC_WIDTH, SRC_HEIGHT, "LearnOpenGL", NULL, NULL); 
   if (window == NULL) {
     std::cerr << "Failed to create GLFW window" << std::endl;
     return -1;
@@ -73,20 +76,36 @@ int main() {
   Figure* figure = new Figure();
   figure->init();
 
-  float l, r;
+  float l, r = 0.0f;
   
   Shader ourShader("shaders/shader.vert", "shaders/shader.frag");
   ourShader.use();
   
   while (!glfwWindowShouldClose(window)) {
-    input_keyboard::processInput(window, l, r);
+    input_keyboard::processInput(window, r, l);
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    ourShader.use();
+
+    glm::mat4 trans;
+
+    trans = glm::mat4();
+    trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.75f, 0.0f + r, 0.0f));
+
+    unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
     glBindVertexArray(VAO);
-  
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    trans = glm::mat4();
+    trans = glm::translate(glm::mat4(1.0f), glm::vec3(-0.75, 0.0f + l, 0.0f));
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
@@ -96,5 +115,6 @@ int main() {
   glDeleteBuffers(1, &EBO);
 
   glfwTerminate();
+
   return 0;
 }
