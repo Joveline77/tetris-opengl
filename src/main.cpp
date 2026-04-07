@@ -13,9 +13,9 @@
 #include "input.hpp"
 
 
-unsigned int VBO, EBO, VAO;
+unsigned int VBO, EBO, VAO, sp_VBO, sp_VAO;
 
-                        //added                        //added
+                        //added       //added          //added
 //TODO window resizing, block class, sphera class, input_handler class
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -27,6 +27,37 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
+void Figure::init_ball() {
+  const int segments = 64;
+  const float radius = 0.08f;
+
+  std::vector<float> c_vertices;
+
+  c_vertices.insert(c_vertices.end(), {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f});
+
+  for (int i = 0; i <= segments; ++i) {
+    float angle = 2.0f * 3.14159265359f * i / segments;
+    float x = radius * cosf(angle);
+    float y = radius * sinf(angle);
+
+    c_vertices.insert(c_vertices.end(), {x, y, 0.0f, 1.0f, 1.0f, 0.0f});
+  }
+
+  glGenVertexArrays(1, &sp_VAO);
+  glGenBuffers(1, &sp_VBO);
+
+  glBindVertexArray(sp_VAO);
+  glBindBuffer(GL_ARRAY_BUFFER, sp_VBO);
+  glBufferData(GL_ARRAY_BUFFER, c_vertices.size() * sizeof(float), c_vertices.data(), GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
+  glBindVertexArray(0);
+
+}
 
 void Figure::init() {
    
@@ -60,7 +91,7 @@ int main() {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif // __APPLE
   
-  GLFWwindow* window = glfwCreateWindow(SRC_WIDTH, SRC_HEIGHT, "LearnOpenGL", NULL, NULL); 
+  GLFWwindow* window = glfwCreateWindow(SRC_WIDTH, SRC_HEIGHT, "Ping-Pong-2D", NULL, NULL); 
   if (window == NULL) {
     std::cerr << "Failed to create GLFW window" << std::endl;
     return -1;
@@ -75,6 +106,7 @@ int main() {
 
   Figure* figure = new Figure();
   figure->init();
+  figure->init_ball();
 
   float l, r = 0.0f;
   
@@ -89,12 +121,13 @@ int main() {
 
     ourShader.use();
 
-    glm::mat4 trans;
+    unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
 
+    glm::mat4 trans;
+    
     trans = glm::mat4();
     trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.75f, 0.0f + r, 0.0f));
 
-    unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
     glBindVertexArray(VAO);
@@ -106,6 +139,19 @@ int main() {
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+
+    glm::mat4 transBall = glm::mat4(1.0f);
+    transBall = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transBall));
+    glBindVertexArray(sp_VAO);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 66);
+
+    glBindVertexArray(0);
+
+    //glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    //glBufferData(GL_ARRAY_BUFFER, c_vertices.size() * sizeof(float), c_vertices.data(), GL_DYNAMIC_DRAW);
+
+    //glDrawArrays(GL_TRIANGLE_FAN, 0, c_vertices.size() / 2);
 
     glfwSwapBuffers(window);
     glfwPollEvents();
