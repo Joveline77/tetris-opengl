@@ -21,6 +21,15 @@ namespace Figure_Sphere {
   float ysp = 1.0f;
   float xsp = 2.5f;
   bool firstSP = true;
+
+void randomSpeed() {
+    std::srand(std::time(0));
+    int rNum = 1 + std::rand() % 2;
+    if (rNum == 1) {
+      xsp *= -1;
+    }
+  }
+
   std::vector<float> circleVertices(float cx, float cy, float radius, int segments) {
     const float PI = 3.14159265359f;
     std::vector<float> vertices;
@@ -38,22 +47,25 @@ namespace Figure_Sphere {
     return vertices;
   }
   void circleSpeed(float glfwTime, glm::vec3 &vec) {
-    //xsp MUST BE > ysp
+    if (firstSP) {
+      randomSpeed();
+      firstSP = false;
+    }
+    //xsp MUST BE > ysp, BTW NO, i've added wall-ricochet(like wall-jump but ricochet)
     vec.x += vec.z * glfwTime * xsp;
     vec.y += vec.z * glfwTime * ysp;
   }
   void resetWhenNeed(glm::vec3 &r, glm::vec3 &l, glm::vec3 &sphere) {
    if (sphere.x > (r.x + 0.05f) || sphere.x < l.x - 0.05f) {
-     //int z = -sphere.z * 2;
-     //std::srand(std::time(0));
-     //int randZ = (std::rand() % 2) + 1;
      sphere = glm::vec3(0.0f, 0.0f, 0.2f);
+     randomSpeed();
      ysp = 1.0f;
    }
    if (sphere.y > 1.0f || sphere.y < -1.0f) {
      ysp *= -1;
    }
   }
+
   void processRicochet(glm::vec3 &r, glm::vec3 &l, glm::vec3 &sphere) {
     auto ycof = Figure_Coords::vertices[1];
     const float MAX_ANGLE_FACTOR = 1.0f;
@@ -73,6 +85,8 @@ namespace Figure_Sphere {
       return;
     }
   }
+
+  
 };
 
 class Figure {
