@@ -33,6 +33,9 @@ void Figure::init_ball() {
 
   std::vector<float> c_vertices;
 
+  auto width  = 1.0f;
+  auto height = (SRC_WIDTH / SRC_HEIGHT) * width;
+
   c_vertices.insert(c_vertices.end(), {0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f});
 
   for (int i = 0; i <= segments; ++i) {
@@ -112,9 +115,19 @@ int main() {
   
   Shader ourShader("shaders/shader.vert", "shaders/shader.frag");
   ourShader.use();
+
+  float lastTime = 0.0f;
+  float deltatime = 0.0f;
+  auto temp = glm::vec3(0.0f, 0.0f, 0.2f);
   
   while (!glfwWindowShouldClose(window)) {
     input_keyboard::processInput(window, r, l);
+
+
+    float currentTime = glfwGetTime();
+    deltatime = currentTime - lastTime;
+    lastTime = currentTime;
+
 
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -141,9 +154,16 @@ int main() {
     glBindVertexArray(0);
 
     glm::mat4 transBall = glm::mat4(1.0f);
-    transBall = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
+    auto rv = glm::vec3(0.75f, 0.0f + r, 0.0f);
+    auto lv = glm::vec3(-0.75f, 0.0f + l, 0.0f);
+    Figure_Sphere::processRicochet(rv, lv, temp);
+    Figure_Sphere::resetWhenNeed(rv, lv, temp);
+    Figure_Sphere::circleSpeed(deltatime, temp);
+    transBall = glm::translate(glm::mat4(1.0f), temp);
+    
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transBall));
     glBindVertexArray(sp_VAO);
+
     glDrawArrays(GL_TRIANGLE_FAN, 0, 66);
 
     glBindVertexArray(0);
