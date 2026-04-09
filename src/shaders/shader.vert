@@ -8,5 +8,5 @@
 
   void main() {
   gl_Position = transform * vec4(aPos.x, aPos.y, aPos.z, 1.0);   
-  };
+  }
 

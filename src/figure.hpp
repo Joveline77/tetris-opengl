@@ -56,7 +56,7 @@ void randomSpeed() {
     vec.y += vec.z * glfwTime * ysp;
   }
   void resetWhenNeed(glm::vec3 &r, glm::vec3 &l, glm::vec3 &sphere) {
-   if (sphere.x > (r.x + 0.05f) || sphere.x < l.x - 0.05f) {
+   if (sphere.x > (r.x + 0.1f) || sphere.x < l.x - 0.1f) {
      sphere = glm::vec3(0.0f, 0.0f, 0.2f);
      randomSpeed();
      ysp = 1.0f;
@@ -70,13 +70,13 @@ void randomSpeed() {
     auto ycof = Figure_Coords::vertices[1];
     const float MAX_ANGLE_FACTOR = 1.0f;
 
-    if ((((r.x - 0.05f) < sphere.x) && r.x < sphere.x) && ((r.y + ycof) > sphere.y && (r.y - ycof) < sphere.y)) {
+    if ((((r.x - 0.09f) < sphere.x) && r.x < sphere.x) && ((r.y + ycof) > sphere.y && (r.y - ycof) < sphere.y)) {
     float rIY = (sphere.y - r.y) / ycof;
     ysp = rIY * MAX_ANGLE_FACTOR;
     sphere.z *= -1;
     return;
     }
-    if ((((l.x + 0.05f) > sphere.x) && l.x > sphere.x) && ((l.y + ycof) > sphere.y && (l.y - ycof) < sphere.y)) {
+    if ((((l.x + 0.09f) > sphere.x) && l.x > sphere.x) && ((l.y + ycof) > sphere.y && (l.y - ycof) < sphere.y)) {
       float lIY = (sphere.y - l.y) / ycof;
       ysp = lIY * MAX_ANGLE_FACTOR;
       sphere.z *= -1;
