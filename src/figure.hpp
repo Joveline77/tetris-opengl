@@ -19,7 +19,7 @@ namespace Figure_Coords {
 
 namespace Figure_Sphere {
   float ysp = 1.0f;
-  float xsp = 1.0f;
+  float xsp = 2.5f;
   bool firstSP = true;
   std::vector<float> circleVertices(float cx, float cy, float radius, int segments) {
     const float PI = 3.14159265359f;
@@ -43,13 +43,12 @@ namespace Figure_Sphere {
     vec.y += vec.z * glfwTime * ysp;
   }
   void resetWhenNeed(glm::vec3 &r, glm::vec3 &l, glm::vec3 &sphere) {
-   if (sphere.x > (r.x + 0.15f) || sphere.x < l.x - 0.15f) {
+   if (sphere.x > (r.x + 0.05f) || sphere.x < l.x - 0.05f) {
      //int z = -sphere.z * 2;
      //std::srand(std::time(0));
      //int randZ = (std::rand() % 2) + 1;
      sphere = glm::vec3(0.0f, 0.0f, 0.2f);
      ysp = 1.0f;
-     xsp = 1.0f; 
    }
    if (sphere.y > 1.0f || sphere.y < -1.0f) {
      ysp *= -1;
@@ -62,12 +61,14 @@ namespace Figure_Sphere {
     if ((((r.x - 0.1f) < sphere.x) && r.x < sphere.x) && ((r.y + ycof) > sphere.y && (r.y - ycof) < sphere.y)) {
     float rIY = (sphere.y - r.y) / ycof;
     ysp = rIY * MAX_ANGLE_FACTOR;
+    ysp *= -1;
     sphere.z *= -1;
     return;
     }
     if ((((l.x + 0.1f) > sphere.x) && l.x > sphere.x) && ((l.y + ycof) > sphere.y && (l.y - ycof) < sphere.y)) {
       float lIY = (sphere.y - l.y) / ycof;
       ysp = lIY * MAX_ANGLE_FACTOR;
+      ysp *= -1;
       sphere.z *= -1;
       return;
     }
