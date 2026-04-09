@@ -123,6 +123,8 @@ int main() {
   while (!glfwWindowShouldClose(window)) {
     input_keyboard::processInput(window, r, l);
 
+    auto rv = glm::vec3(0.75f, 0.0f + r, 0.0f);
+    auto lv = glm::vec3(-0.75f, 0.0f + l, 0.0f);
 
     float currentTime = glfwGetTime();
     deltatime = currentTime - lastTime;
@@ -139,7 +141,7 @@ int main() {
     glm::mat4 trans;
     
     trans = glm::mat4();
-    trans = glm::translate(glm::mat4(1.0f), glm::vec3(0.75f, 0.0f + r, 0.0f));
+    trans = glm::translate(glm::mat4(1.0f), rv);
 
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
@@ -147,15 +149,13 @@ int main() {
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     trans = glm::mat4();
-    trans = glm::translate(glm::mat4(1.0f), glm::vec3(-0.75, 0.0f + l, 0.0f));
+    trans = glm::translate(glm::mat4(1.0f), lv);
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 
     glm::mat4 transBall = glm::mat4(1.0f);
-    auto rv = glm::vec3(0.75f, 0.0f + r, 0.0f);
-    auto lv = glm::vec3(-0.75f, 0.0f + l, 0.0f);
     Figure_Sphere::processRicochet(rv, lv, temp);
     Figure_Sphere::resetWhenNeed(rv, lv, temp);
     Figure_Sphere::circleSpeed(deltatime, temp);
