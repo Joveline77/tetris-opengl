@@ -11,12 +11,12 @@
 #include "shader.h"
 #include "figure.hpp"
 #include "input.hpp"
+#include "score.hpp"
 
 
 unsigned int VBO, EBO, VAO, sp_VBO, sp_VAO;
 
-                        //added       //added          //added
-//TODO window resizing, block class, sphera class, input_handler class
+//TODO window resizing, доделать очки, расчет очков при отбивании, отнимание при пропуске, showScore
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 
@@ -156,9 +156,12 @@ int main() {
     glBindVertexArray(0);
 
     glm::mat4 transBall = glm::mat4(1.0f);
-    Figure_Sphere::processRicochet(rv, lv, temp);
-    Figure_Sphere::resetWhenNeed(rv, lv, temp);
     Figure_Sphere::circleSpeed(deltatime, temp);
+    if (Figure_Sphere::isRicochet(rv, lv, temp)) {
+      Figure_Sphere::processRicochet(rv, lv, temp);
+      Score::scoreCount(rv, lv, temp);
+    }
+    Figure_Sphere::resetWhenNeed(rv, lv, temp);
     transBall = glm::translate(glm::mat4(1.0f), temp);
     
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transBall));

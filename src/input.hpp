@@ -1,3 +1,4 @@
+#pragma once
 #include <GLFW/glfw3.h>
 
 class input_keyboard {
@@ -9,7 +10,7 @@ class input_keyboard {
 public:
 static void processInput(GLFWwindow *window, float &loffset, float &offset) {
 
-  float butt_speed = 0.02f;
+  float butt_speed = 0.015f;
 
   if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
      offset += butt_speed; 

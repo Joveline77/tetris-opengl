@@ -1,6 +1,8 @@
+#pragma once
 #include <vector>
 #include <cstdlib>
 #include <ctime>
+#include "score.hpp"
 
 namespace Figure_Coords {
   float vertices[] = {
@@ -21,6 +23,7 @@ namespace Figure_Sphere {
   float ysp = 1.0f;
   float xsp = 2.5f;
   bool firstSP = true;
+  auto ycof = Figure_Coords::vertices[1];
 
 void randomSpeed() {
     std::srand(std::time(0));
@@ -56,35 +59,46 @@ void randomSpeed() {
     vec.y += vec.z * glfwTime * ysp;
   }
   void resetWhenNeed(glm::vec3 &r, glm::vec3 &l, glm::vec3 &sphere) {
-   if (sphere.x > (r.x + 0.1f) || sphere.x < l.x - 0.1f) {
+   if (sphere.x > (r.x + 0.1f) || sphere.x < l.x - 0.1f || (sphere.y > 1.15f) || (sphere.y < -1.15f)) {
      sphere = glm::vec3(0.0f, 0.0f, 0.2f);
      randomSpeed();
      ysp = 1.0f;
    }
-   if (sphere.y > 1.0f || sphere.y < -1.0f) {
+   if (sphere.y + 0.05f > 1.0f) {
      ysp *= -1;
+     sphere.y -= 0.05f; 
+   } else if (sphere.y - 0.05f < -1.0f) {
+     ysp *= -1;
+     sphere.y += 0.05f;
    }
   }
 
   void processRicochet(glm::vec3 &r, glm::vec3 &l, glm::vec3 &sphere) {
-    auto ycof = Figure_Coords::vertices[1];
-    const float MAX_ANGLE_FACTOR = 1.0f;
+    const float MAX_ANGLE_FACTOR = 4.0f;
 
     if ((((r.x - 0.09f) < sphere.x) && r.x < sphere.x) && ((r.y + ycof) > sphere.y && (r.y - ycof) < sphere.y)) {
     float rIY = (sphere.y - r.y) / ycof;
     ysp = rIY * MAX_ANGLE_FACTOR;
+    sphere.x -= 0.05f;
     sphere.z *= -1;
+    Score::isRPlayer = true;
     return;
     }
     if ((((l.x + 0.09f) > sphere.x) && l.x > sphere.x) && ((l.y + ycof) > sphere.y && (l.y - ycof) < sphere.y)) {
       float lIY = (sphere.y - l.y) / ycof;
       ysp = lIY * MAX_ANGLE_FACTOR;
+      sphere.x += 0.05f;
       sphere.z *= -1;
+      Score::isRPlayer = false;
       return;
     }
   }
+  bool isRicochet(glm::vec3 &r, glm::vec3 &l, glm::vec3 &sphere) {
+   if (((((r.x - 0.09f) < sphere.x) && r.x < sphere.x) && ((r.y + ycof) > sphere.y && (r.y - ycof) < sphere.y)) || ((((l.x + 0.09f) > sphere.x) && l.x > sphere.x) && ((l.y + ycof) > sphere.y && (l.y - ycof) < sphere.y))) {return true; 
+   } 
 
-  
+  return false;
+  }
 };
 
 class Figure {
