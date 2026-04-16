@@ -20,6 +20,8 @@ void Player::plusScore(int score) {
 }
 
 void Player::showScore() {
+
+
   std::cout << "\t" << username << "'s " << _score << "\n";
 }
 
@@ -30,6 +32,7 @@ namespace Score {
  int scoreCount(glm::vec3& r, glm::vec3& l, glm::vec3 circle);
  void win();
  bool isRPlayer;
+ void clear();
 }
 
 int Score::scoreCount(glm::vec3& r, glm::vec3& l, glm::vec3 sphere) {
@@ -41,6 +44,14 @@ int Score::scoreCount(glm::vec3& r, glm::vec3& l, glm::vec3 sphere) {
     result = 10 * (sphere.y - l.y + 1);
     lPlayer.plusScore(result);
   }
+  clear();
   rPlayer.showScore();
   lPlayer.showScore();
+}
+void Score::clear() {
+#ifdef _WIN32
+  system("cls");
+#else 
+  system("clear");
+#endif
 }
