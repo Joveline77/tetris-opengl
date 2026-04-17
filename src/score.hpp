@@ -10,6 +10,7 @@ class Player {
     void plusScore(int score);
     void changeUnserName(std::string& username);
     void showScore();
+    void setRocket(glm::vec3 rocket);
 
   Player() : username("Player"), _score(0) {}
   Player(const std::string& name, int score) : username(name), _score(score) {}

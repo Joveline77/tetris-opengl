@@ -63,12 +63,16 @@ void randomSpeed() {
     vec.x += vec.z * glfwTime * xsp;
     vec.y += vec.z * glfwTime * ysp;
   }
-  void lightning(glm::vec3 &color) {
+  void lightning(glm::vec3 &color, float glTime) {
     if (lightCount > 16) {
       slLight = false;
       srLight = false;
       lightCount = 0;
       return;
+    }
+    
+    if (lightCount < 1) {
+      lightTime = glTime;
     }
 
     //lightning

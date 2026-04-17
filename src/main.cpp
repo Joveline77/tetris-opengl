@@ -137,19 +137,29 @@ int main() {
     ourShader.use();
 
     unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
+    unsigned int colorLocation = glGetUniformLocation(ourShader.ID, "objColor");
 
     glm::mat4 trans;
     
     trans = glm::mat4();
     trans = glm::translate(glm::mat4(1.0f), rv);
+    glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
+    if (Figure_Sphere::srLight) {
+      Figure_Sphere::lightning(color);
+    }
+    glUniform3f(colorLocation, color.x, color.y, color.z);
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
     trans = glm::mat4();
     trans = glm::translate(glm::mat4(1.0f), lv);
+    color = glm::vec3(1.0f, 1.0f, 1.0f);
+    if (Figure_Sphere::slLight) {
+      Figure_Sphere::lightning(color);
+    }
+    glUniform3f(colorLocation, color.x, color.y, color.z);
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
@@ -165,6 +175,7 @@ int main() {
     transBall = glm::translate(glm::mat4(1.0f), temp);
     
     glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transBall));
+    glUniform3f(colorLocation, 1.0f, 1.0f, 1.0f);
     glBindVertexArray(sp_VAO);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 66);
